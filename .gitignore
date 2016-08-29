@@ -1,0 +1,4 @@
+.vscode/
+.DS_Store
+ignore/
+dotfiles.d/zz.local.bash

@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# Name:        bash_logout
+# Author:      prince@princebot.com
+# Source:      https://github.com/princebot/dotfiles
+# Description: Cleanup actions for login shells.
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+# Bash runs this script when an interactive login shell quits. This is a good
+# place to put cleanup actions to remove history and other files that you don’t
+# want to leave behind in shared environments.
+#
+# Example:
+#
+#     {
+#         export HISTFILE=/dev/null
+#         rm -f -- ~/.bash_history
+#         rm -f -- ~/.python_history 
+#         rm -f -- "${HOME}/.vim_mru_files" "${HOME}/.vim_info"
+#         find "${HOME}/.ipython" -name history.sqlite -delete
+#     } &>/dev/null

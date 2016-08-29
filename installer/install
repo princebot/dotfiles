@@ -1,0 +1,81 @@
+#!/usr/bin/env bash
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# Name:     install
+# Author:   prince@princebot.com
+# Source:   https://github.com/princebot/dotfiles
+# Synopsis: Installer script for dotfiles.
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# Constants and functions.
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+# Canonical name of this script.
+declare -r PROG=install
+
+# Root directory in which to install dotfiles.
+declare -r DOTFILES_DIR="${HOME}/.dotfiles.d"
+
+# die displays an error message then terminates this script with exit status 1.
+function die {
+    >&2 printf -- "${PROG}: error: $@"
+    exit 1
+}
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# Main execution.
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+# Get the absolute path of the main dotfiles package directory.
+source_dir=$(cd "$(dirname "$0")/.." && pwd -P)
+[[ -n ${source_dir} ]] || die "cannot determine source directory"
+
+# Set the current working directory to $source_dir
+cd "${source_dir}" || die "cannot enter directory ${source_dir}"
+
+# Create ~/.dotfiles.d and ~/.dotfiles.d/bak. If they already exist, back up the
+# old directories first.
+if [[ -d ${DOTFILES_DIR} ]]; then
+    if ! mv "${DOTFILES_DIR}" "${DOTFILES_DIR}.$(date +%s).bak"; then
+        die "cannot back up existing ${DOTFILES_DIR}"
+    fi
+fi
+mkdir -p "${DOTFILES_DIR}/bak" || die "cannot create ${DOTFILES_DIR}"
+
+# Back up existing Bash and Vim configuration files.
+for f in ~/.bash_profile ~/.bashrc ~/.bash_logout ~/.vimrc; do
+    [[ -r $f && ! -d $f ]] || continue
+    name=$(basename "$f")
+    timestamp=$(date +%s)
+    if [[ -z ${name} || -z ${timestamp} ]]; then
+        die "cannot create backup filename for $f"
+    fi
+    dest=${DOTFILES_DIR}/bak/${name}.${timestamp}
+    mv "$f" "${dest}" || die "cannot back up $f to $dest"
+done
+
+# Write new configuration files in $HOME.
+cp -f profile ~/.bashrc || die "cannot write ${HOME}/.bashrc"
+cp -f logout ~/.bash_logout || die "cannot write ${HOME}/.bash_logout"
+cp -f vimrc ~/.vimrc || die "cannot write ${HOME}/.vimrc"
+
+# Hard link ~/.bashrc to ~/.bash_profile; we want them to be the same file.
+if ! ln ~/.bashrc ~/.bash_profile; then
+    die "cannot link ${HOME}/.bash_profile to ${HOME}/.bashrc"
+fi
+
+# Copy remaining dotfiles components into ~/.dotfiles.d.
+cp -R dotfiles.d/lib "${DOTFILES_DIR}/lib" || die "cannot copy dotfiles library"
+cp -R dotfiles.d/bin "${DOTFILES_DIR}/bin" || die "cannot copy dotfiles scripts"
+for f in dotfiles.d/*.*sh; do
+    [[ -r $f && ! -d $f ]] || continue
+    name=$(basename "$f")
+    [[ -n ${name} ]] || die "cannot create new filename for $f"
+    dest="${DOTFILES_DIR}/${name}"
+    cp -f "$f" "${dest}" || die "cannot copy $f to ${DOTFILES_DIR}"
+done
+
+echo
+echo "${PROG}: all operations complete"
+echo "${PROG}: start a fresh shell to load the new configuration"
+echo
