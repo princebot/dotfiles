@@ -11,7 +11,7 @@
 [[ $DOTFILES_OS_TYPE == debian ]] || return
 
 # Make less play nice with non-text input files.
-[[ -x /usr/bin/lesspipe ]] && eval "$(SHELL=/bin/sh lesspipe)".
+[[ -x /usr/bin/lesspipe ]] && eval "$(SHELL=/bin/sh lesspipe)"
 
 # Enable color support for ls.
 if [[ -x /usr/bin/dircolors ]]; then
