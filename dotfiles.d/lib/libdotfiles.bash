@@ -225,9 +225,15 @@ function dotfiles.print_motd {
         underline=$(tput smul)
         white=$(tput setaf 7)
     fi
+    
+    # date +%H gives the hour padded with a 0 if it’s a single digit, i.e., 09.
+    # Bash interprets this as octal and throws an obscure error when it’s 8 or
+    # 9 AM — so strip the leading 0. 
+    #
+    # Oh, Bash.  ◔_◔
+    local -i hour=$(date +%H | sed 's/^0//')
 
     local word
-    local -i hour=$(date +%H)
     if ((hour >= 2 && hour < 12 )); then
         word=morning
     elif ((hour >= 12 && hour < 18)); then
