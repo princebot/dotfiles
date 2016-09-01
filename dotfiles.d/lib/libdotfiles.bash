@@ -41,7 +41,7 @@ declare -xl DOTFILES_OS_TYPE
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 function dotfiles.do_startup {
     if ((DOTFILES_STARTUP_ALREADY_RAN)) || [[ -z $PS1 ]]; then
-        return 1
+        return
     fi
 
     {
@@ -70,7 +70,7 @@ function dotfiles.do_startup {
 
     dotfiles.print_motd
     DOTFILES_STARTUP_ALREADY_RAN=1
-    return 0
+    return
 }
 
 
