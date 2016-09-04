@@ -7,7 +7,7 @@
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 # This defines functions and variables core to the dotfiles implementation. To
-# add new shell configuration, place a new a script in ~/.dotfiles.d rather than
+# add new shell configuration, place a new script in ~/.dotfiles.d instead of
 # modifying this file unless you need to alter the startup process itself.
 
 
@@ -16,7 +16,6 @@
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 # Booleans.
-declare -xi DOTFILES_STARTUP_ALREADY_RAN
 declare -xi DOTFILES_COLORS_SUPPORTED
 
 # Strings.
@@ -30,22 +29,14 @@ declare -xl DOTFILES_OS_TYPE
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # Initialize dotfiles features and source all scripts in ~/.dotfiles.d.
 #
-# If DOTFILES_STARTUP_ALREADY_RAN is nonzero, this does nothing. Likewise, if
-# PS! is not set, this assumes the shell is noninteractive and does nothing.
-#
 # Arguments: None
 # Globals:   DOTFILES_COLORS_SUPPORTED
 #            DOTFILES_OS_TYPE
-#            DOTFILES_STARTUP_ALREADY_RAN
 # Returns:   None
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 function dotfiles.do_startup {
-    if ((DOTFILES_STARTUP_ALREADY_RAN)) || [[ -z $PS1 ]]; then
-        return
-    fi
-
     {
-        shopt -s extglob     # Enable extended syntax for glob pattern matching.
+        shopt -s extglob     # Enable extended syntax for glob patterns.
         shopt -s direxpand   # Put expanded value of directories in readline.
         shopt -s globstar    # Modify behavior of `**` in pathname expansion.
     } 2>/dev/null
@@ -60,7 +51,7 @@ function dotfiles.do_startup {
         fi
     done
 
-    # If ~/.dotfiles.d/bin or ~/bin exist and aren’t empty, append them to PATH.
+    # Append ~/.dotfiles.d/bin and ~/bin to PATH if they exist and have files.
     local d
     for d in ~/.dotfiles.d/bin ~/bin; do
         if [[ -n $(find "$d" -type f 2>/dev/null) ]]; then
@@ -69,21 +60,19 @@ function dotfiles.do_startup {
     done
 
     dotfiles.print_motd
-    DOTFILES_STARTUP_ALREADY_RAN=1
-    return
 }
 
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # Return the operating system for the current machine.
 #
-# If this has been run before and DOTFILES_OS_TYPE is nonempty, dotfiles.os just
+# If this has been run before and DOTFILES_OS_TYPE is nonempty, this simply
 # returns DOTFILES_OS_TYPE. Otherwise, this usually returns `debian`, `redhat`,
-# `darwin` (for Macs).
+# or `darwin` (for Macs).
 #
-# If this is not a CentOS, RedHat, Debian, Ubuntu, or macOS system, this returns
-# an ID value from /etc/os-release or a DISTRIB_ID value from /etc/lsb-release
-# if those files exist; otherwise, dotfiles.os returns `unknown`.
+# If this is not a CentOS, RedHat, Debian, Ubuntu, or macOS system, dotfiles.os
+# returns ID from /etc/os-release or DISTRIB_ID from /etc/lsb-release if those
+# files exist; otherwise, dotfiles.os returns `unknown`.
 #
 # Arguments: None
 # Globals:   DOTFILES_OS_TYPE
@@ -132,9 +121,11 @@ function dotfiles.os {
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # Set PS1 and shell options.
 #
-# If the shell environment supports colors, dotfiles.configure_terminal sets PS1
-# to a colorized prompt and also sets DOTFILES_COLORS_SUPPORTED to 1. Otherwise,
-# this sets a basic default prompt.
+# If the shell environment supports colors, this sets PS1 to a colorized prompt
+# and also sets DOTFILES_COLORS_SUPPORTED to 1. Otherwise, this sets a basic
+# default prompt.
+#
+# If PS1 is not set, this assumes the shell is noninteractive and just returns.
 #
 # Arguments: None
 # Globals:   PS1
@@ -142,6 +133,8 @@ function dotfiles.os {
 # Returns:   None
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 function dotfiles.configure_terminal {
+    [[ -n ${PS1} ]] || return
+
     # Check window size after each command and update LINES and COLUMNS.
     shopt -s checkwinsize 2>/dev/null
     clear
@@ -173,8 +166,8 @@ function dotfiles.configure_terminal {
 # Prepend or append a directory to PATH.
 #
 # This re-implements the pathmunge function commonly found in /etc/profile and
-# works exactly the same. Prepending is the default behavior; to append instead,
-# add "after" as a second argument.
+# works the same. Prepending is the default behavior; to append instead, add
+# "after" as a second argument.
 #
 # If the directory has already been added to PATH, this is a noop.
 #
@@ -211,11 +204,15 @@ Use the optional \"after\" argument to append rather than prepend to PATH."
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # Generate and display the message of the day.
 #
+# If PS1 is not set, this assumes the shell is noninteractive and just returns.
+#
 # Arguments: None
 # Globals:   DOTFILES_COLORS_SUPPORTED
 # Returns:   None
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 function dotfiles.print_motd {
+    [[ -n ${PS1} ]] || return
+
     local bold green reset underline white
     if ((DOTFILES_COLORS_SUPPORTED)); then
         bold=$(tput bold)
