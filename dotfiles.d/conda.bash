@@ -19,3 +19,10 @@ for path in ~/{ana,mini}conda{2,,3}; do
 done
 
 unset -v path
+
+# Set aliases to switch to Python 2.x or Python 3.x.
+if [[ -n $(conda env list | awk '$1 == "py3"') ]]; then
+    alias py3='source activate py3'
+elif [[ -n $(conda env list | awk '$1 == "py2"') ]]; then
+    alias py2='source activate py2'
+fi 2>/dev/null
