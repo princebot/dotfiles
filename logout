@@ -16,6 +16,6 @@
 #         export HISTFILE=/dev/null
 #         rm -f -- ~/.bash_history
 #         rm -f -- ~/.python_history 
-#         rm -f -- "${HOME}/.vim_mru_files" "${HOME}/.vim_info"
+#         rm -f -- "${HOME}/.vim_mru_files" "${HOME}/.viminfo"
 #         find "${HOME}/.ipython" -name history.sqlite -delete
 #     } &>/dev/null
