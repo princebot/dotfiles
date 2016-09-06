@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-# Name:     functions.bash
+# Name:     go.bash
 # Author:   prince@princebot.com
 # Source:   https://github.com/princebot/dotfiles
 # Synopsis: Set golang configuration.
