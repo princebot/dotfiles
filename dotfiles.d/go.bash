@@ -18,5 +18,8 @@ fi
 # If GOPATH is not set, skip the rest of this script.
 [[ -n ${GOPATH} ]] || return
 
+# Add user-installed Go programs to PATH.
+dotfiles.pathmunge "${GOPATH}/bin" after
+
 # Change to a directory relative to $GOPATH/src.
 function cdgo { cd "${GOPATH}/src/$1"; }
