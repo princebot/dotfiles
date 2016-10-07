@@ -19,7 +19,7 @@
 declare -xi DOTFILES_COLORS_SUPPORTED
 
 # Strings.
-declare -xl DOTFILES_OS_TYPE
+declare -x DOTFILES_OS_TYPE
 
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -84,7 +84,7 @@ function dotfiles.os {
         return
     fi
 
-    local -l os
+    local os
     while true; do
         if [[ -f /etc/centos-release ]]; then
             os=centos
@@ -94,15 +94,15 @@ function dotfiles.os {
             break
         fi
 
-        local -l out
+        local out
         if [[ -f /etc/os-release ]]; then
             out=$(awk -F'=' '$1 == "ID" {print $2}' </etc/os-release)
         elif [[ -f /etc/lsb-release ]]; then
             out=$(awk -F'=' '$1 == "DISTRIB_ID" {print $2}' </etc/lsb-release)
         fi
         if [[ -n ${out} ]]; then
-            # Strip quotation marks.
-            os=$(printf -- "${out}" | sed 's/\"//g')
+            # Strip quotation marks and convert to lower case.
+            os=$(printf -- "${out}" | sed 's/\"//g' | tr A-Z a-z)
             break
         fi
 
