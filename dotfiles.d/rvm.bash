@@ -6,8 +6,7 @@
 # Synopsis: Set Ruby Version Manager (RVM) configuration.
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-# If RVM is installed, load it.
 if [[ -d ~/.rvm/bin && -s ~/.rvm/scripts/rvm ]]; then
-    dotfiles.pathmunge ~/.rvm/bin after
-    source ~/.rvm/scripts/rvm
+    dotfiles.pathmunge ~/.rvm/bin  # activate RVM
+    source ~/.rvm/scripts/rvm      # load RVM into shell as a function
 fi
