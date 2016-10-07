@@ -1,4 +1,9 @@
 .vscode/
 .DS_Store
-ignore/
-dotfiles.d/zz.local.bash
+
+# Ignore zz.local.bash, which stores machine-specific shell startup.
+zz.local.bash
+
+# Ignore top-level directories that begin with __, used by personal convention
+# to hold ignorable file trees.
+/__*/
