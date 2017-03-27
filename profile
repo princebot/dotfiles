@@ -10,10 +10,10 @@
 
 # Source the dotfiles library if the current shell or one of its ancestors has
 # not already done so.
-if [[ -r ~/.dotfiles.d/lib/libdotfiles.bash ]]; then
-        source ~/.dotfiles.d/lib/libdotfiles.bash
+if [[ -r ~/.config/dotfiles/lib/dotfiles.bash ]]; then
+        source ~/.config/dotfiles/lib/dotfiles.bash
 else
-    echo "dotfiles: missing library file ~/.dotfiles.d/lib/libdotfiles.bash"
+    echo "dotfiles: missing library file ~/.config/dotfiles/lib/dotfiles.bash"
     echo "dotfiles: reinstall from https://github.com/princebot/dotfiles"
     return 1
 fi >&2

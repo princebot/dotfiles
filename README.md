@@ -33,7 +33,7 @@ The installer does the following:
 - copies <tt>vimrc</tt> to <tt>~/.vimrc</tt>
 - copies <tt>dotfiles.d</tt> to <tt>~/.dotfiles.d/</tt>
 
-New shells will source the main configuration in <tt>~/.dotfiles.d/lib/libdotfiles.bash</tt>,
+New shells will source the main configuration in <tt>~/.config/dotfiles/lib/dotfiles.bash</tt>,
 which in turn sources every file matching <tt>~/.dotfiles.d/\*.\*sh</tt>. 
 
 To add new configuration, create a new file in <tt>~/.dotfiles.d</tt> to be 

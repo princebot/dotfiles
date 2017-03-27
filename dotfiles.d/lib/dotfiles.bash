@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-# Name:     libdotfiles.bash
+# Name:     dotfiles.bash
 # Author:   prince@princebot.com
 # Source:   https://github.com/princebot/dotfiles
 # Synopsis: Bash library for dotfiles.
