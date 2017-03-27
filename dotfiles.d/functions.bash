@@ -49,32 +49,68 @@ function aliases {
 
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-# Edit system configuration files as root via sudo.
+# Edit common system- or user-level configuration files.
 #
-# Usage: edit hosts|ssh|sshd
+# Usage: edit hosts
+#        edit git|local.git|user.git
+#        edit ssh|user.ssh
+#        edit sshd
+#
+# Files that have multiple versions accept an optional namespace , e.g., edit
+# user.ssh. This defaults to the system namespace when omitted, and editing
+# system files will require sudo access.
+#
+# Currently supported files:
+#
+#     hosts        => /etc/hosts
+#     git
+#       local.git  => $(pwd)/config
+#       system.git => /etc/gitconfig
+#       user.git   => ~/.config/git/config
+#     ssh
+#       system.ssh => /etc/ssh/ssh_config
+#       user.ssh   => ~/.ssh/config
+#     sshd         => /etc/ssh/ssh_config
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 function edit {
-    local editor_cmd
-    if (($(id -u) == 0)); then
-        editor_cmd="${VISUAL:-vim}"
+    local namespace
+    local target
+    if [[ $1 =~ \. ]]; then
+        namespace=$(printf -- "$1" | cut -d '.' -f 1)
+        target=$(printf -- "$1" | cut -d '.' -f 2)
     else
-        if ! which sudo &>/dev/null; then
-            >&2 echo "edit: must have sudo if not root"
-            return 1
-        fi
-        editor_cmd="sudo -e"
+        namespace="system"
+        target=$1
     fi
 
-    case $1 in
-        hosts) ${editor_cmd} /etc/hosts           ;;
-        ssh)   ${editor_cmd} /etc/ssh/ssh_config  ;;
-        sshd)  ${editor_cmd} /etc/ssh/sshd_config ;;
-
+    local config
+    case ${target} in
+        hosts)
+            config="/etc/hosts" ;;
+        git)
+            case ${namespace} in
+                local)  config="$(pwd)/.git/config" ;;
+                system) config="/etc/gitconfig" ;;
+                user)   config="${HOME}/.config/git/config" ;;
+            esac ;;
+        ssh)
+            case ${namespace} in
+                system) config="/etc/ssh/ssh_config" ;;
+                user)   config="${HOME}/.ssh/config" ;;
+            esac ;;
+        sshd)
+            config="/etc/ssh/sshd_config" ;;
         *)
-            >&2 echo "edit: unknown argument \"$1\""
-            >&2 echo "usage: edit hosts|ssh|sshd"
-            return 1
+            >&2 echo "unknown target ${target}"
+            return 1 ;;
     esac
+
+    local editor="${VISUAL:-vim}"
+    if [[ ${namespace} == system ]] && (($(id -u) != 0)); then
+        sudo ${editor} "${config}"
+    else
+        ${editor} "${config}"
+    fi
 }
 
 
