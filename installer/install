@@ -41,11 +41,9 @@ if [[ -d ${DOTFILES_DIR} ]]; then
     if ! mv "${DOTFILES_DIR}" "${DOTFILES_DIR}.$(date +%s).bak"; then
         die "cannot back up existing ${DOTFILES_DIR}"
     fi
-else
-    if !(mkdir "${CONFIG_DIR}" && mkdir "${DOTFILES_DIR}"); then
-        die "cannot create ${DOTFILES_DIR}"
-    fi
 fi
+[[ -d ${CONFIG_DIR} ]] || mkdir "${CONFIG_DIR}"
+mkdir "${DOTFILES_DIR}" || die "cannot create ${DOTFILES_DIR}"
 
 # Back up existing Bash and Vim configuration files.
 for f in ~/.bash_profile ~/.bashrc ~/.bash_logout ~/.vimrc; do
