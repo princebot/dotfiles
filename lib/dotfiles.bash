@@ -27,7 +27,7 @@ declare -x DOTFILES_OS_TYPE
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-# Initialize dotfiles features and source all scripts in ~/.dotfiles.d.
+# Initialize dotfiles features and source all scripts in ~/.config/dotfiles.
 #
 # Arguments: None
 # Globals:   DOTFILES_COLORS_SUPPORTED
@@ -45,15 +45,15 @@ function dotfiles.do_startup {
     dotfiles.configure_terminal
 
     # Source user startup scripts.
-    for f in ~/.dotfiles.d/*.*sh; do
+    for f in ~/.config/dotfiles/*.*sh; do
         if [[ -r $f && ! -d $f ]]; then
             source "$f"
         fi
     done
 
-    # Append ~/.dotfiles.d/bin and ~/bin to PATH if they exist and have files.
+    # Append ~/.config/dotfiles/bin and ~/bin to PATH if they are nonempty.
     local d
-    for d in ~/.dotfiles.d/bin ~/bin; do
+    for d in ~/.config/dotfiles/bin ~/bin; do
         if [[ -n $(find "$d" -type f 2>/dev/null) ]]; then
             dotfiles.pathmunge "$d" after
         fi

@@ -20,8 +20,13 @@ function die {
     exit 1
 }
 
+# Destructively copy file $1 over file $2.
+function clobber {
+    rm -f -- "$2" && cp -f -- "$1" "$2"
+}
+
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-# Main execution.
+# Scipt.
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 # Get the absolute path of the main dotfiles package directory.
@@ -44,35 +49,26 @@ fi
 
 # Back up existing Bash and Vim configuration files.
 for f in ~/.bash_profile ~/.bashrc ~/.bash_logout ~/.vimrc; do
-    [[ -r $f && ! -d $f ]] || continue
-    name=$(basename "$f")
-    timestamp=$(date +%s)
-    if [[ -z ${name} || -z ${timestamp} ]]; then
-        die "cannot create backup filename for $f"
-    fi
-    dest=${DOTFILES_DIR}/bak/${name}.${timestamp}
-    mv "$f" "${dest}" || die "cannot back up $f to $dest"
+    [[ -e $f ]] || continue
+    mv "$f" "${f}.$(date +%s).bak" || die "cannot save backup of $f"
 done
 
 # Write new configuration files in $HOME.
-cp -f profile ~/.bashrc || die "cannot write ${HOME}/.bashrc"
-cp -f logout ~/.bash_logout || die "cannot write ${HOME}/.bash_logout"
-cp -f vimrc ~/.vimrc || die "cannot write ${HOME}/.vimrc"
+clobber profile ~/.bashrc || die "cannot write ${HOME}/.bashrc"
+clobber logout ~/.bash_logout || die "cannot write ${HOME}/.bash_logout"
+clobber vimrc ~/.vimrc || die "cannot write ${HOME}/.vimrc"
 
-# Hard link ~/.bashrc to ~/.bash_profile; we want them to be the same file.
+# Hard link ~/.bashrc to ~/.bash_profile --- we want them to be the same file.
+rm -f ~/.bash_profile
 if ! ln ~/.bashrc ~/.bash_profile; then
     die "cannot link ${HOME}/.bash_profile to ${HOME}/.bashrc"
 fi
 
 # Copy remaining dotfiles components into ~/.config/dotfiles.
-cp -R ./lib "${DOTFILES_DIR}/lib" || die "cannot copy dotfiles library"
-for f in dotfiles.d/*.*sh; do
-    [[ -r $f && ! -d $f ]] || continue
-    name=$(basename "$f")
-    [[ -n ${name} ]] || die "cannot create new filename for $f"
-    dest="${DOTFILES_DIR}/${name}"
-    cp -f "$f" "${dest}" || die "cannot copy $f to ${DOTFILES_DIR}"
-done
+cp -R lib "${DOTFILES_DIR}/lib" || die "cannot copy dotfiles library"
+if ! cp dotfiles.d/*.*sh "${DOTFILES_DIR}"; then
+    die "cannot copy startup scripts into ${DOTFILES_DIR}"
+fi
 
 echo
 echo "${PROG}: all operations complete"
