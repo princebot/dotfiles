@@ -39,3 +39,8 @@ which in turn sources every file matching <tt>~/.dotfiles.d/\*.\*sh</tt>.
 To add new configuration, create a new file in <tt>~/.dotfiles.d</tt> to be 
 sourced with all the others; for example, to add [Visual Studio Code](https://code.visualstudio.com/)
 configuration, you might create a <tt>~/.dotfiles.d/vscode.bash</tt> file.
+
+## TODO
+- [ ] Revise and complete README.
+- [ ] Refactor installer for new dotfiles location `~/.config/dotfiles`.
+- [ ] Try out adding tests using [bats](https://github.com/sstephenson/bats)
