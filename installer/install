@@ -64,8 +64,8 @@ if ! ln ~/.bashrc ~/.bash_profile; then
     die "cannot link ${HOME}/.bash_profile to ${HOME}/.bashrc"
 fi
 
-# Copy remaining dotfiles components into ~/.dotfiles.d.
-cp -R dotfiles.d/lib "${DOTFILES_DIR}/lib" || die "cannot copy dotfiles library"
+# Copy remaining dotfiles components into ~/.config/dotfiles.
+cp -R ./lib "${DOTFILES_DIR}/lib" || die "cannot copy dotfiles library"
 for f in dotfiles.d/*.*sh; do
     [[ -r $f && ! -d $f ]] || continue
     name=$(basename "$f")
