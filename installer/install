@@ -10,11 +10,9 @@
 # Constants and functions.
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-# Canonical name of this script.
 declare -r PROG=install
-
-# Root directory in which to install dotfiles.
-declare -r DOTFILES_DIR="${HOME}/.dotfiles.d"
+declare -r CONFIG_DIR="${HOME}/.config"
+declare -r DOTFILES_DIR="${CONFIG_DIR}/dotfiles"
 
 # die displays an error message then terminates this script with exit status 1.
 function die {
@@ -33,14 +31,16 @@ source_dir=$(cd "$(dirname "$0")/.." && pwd -P)
 # Set the current working directory to $source_dir
 cd "${source_dir}" || die "cannot enter directory ${source_dir}"
 
-# Create ~/.dotfiles.d and ~/.dotfiles.d/bak. If they already exist, back up the
-# old directories first.
+# Create dotfiles directory. If it already exists, save the previous one first.
 if [[ -d ${DOTFILES_DIR} ]]; then
     if ! mv "${DOTFILES_DIR}" "${DOTFILES_DIR}.$(date +%s).bak"; then
         die "cannot back up existing ${DOTFILES_DIR}"
     fi
+else
+    if !(mkdir "${CONFIG_DIR}" && mkdir "${DOTFILES_DIR}"); then
+        die "cannot create ${DOTFILES_DIR}"
+    fi
 fi
-mkdir -p "${DOTFILES_DIR}/bak" || die "cannot create ${DOTFILES_DIR}"
 
 # Back up existing Bash and Vim configuration files.
 for f in ~/.bash_profile ~/.bashrc ~/.bash_logout ~/.vimrc; do
